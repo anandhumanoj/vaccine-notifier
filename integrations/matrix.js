@@ -8,17 +8,15 @@ const withConnection = (callback, ...args) => {
         accessToken: process.env.MATRIX_ACCESS_TOKEN,
         userId: process.env.MATRIX_USER_ID
     });
-    client.on("event", function(event){
-        console.log(event.getType());
-        console.log(event);
-    })
-    client.on('sync', function(state, prevState, res) {
-        console.log("Matrix client sync state updated. New state:", state); 
-        if (state == "PREPARED" && typeof callback == 'function'){
-            callback(...args);
-        }
-    });
     client.startClient();
+    clientState = '';
+    client.once('sync', function(state, prevState, res) {
+        console.log("Matrix client sync state updated. New state:", state); 
+        clientState = state;
+    });
+    if (clientState == "PREPARED" && typeof callback == 'function'){
+        callback(...args);
+    }
 }
 
 const sendNotificationImpl = (message) => {

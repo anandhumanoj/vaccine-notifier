@@ -12,7 +12,7 @@ const withConnection = (callback, ...args) => {
         console.log(event.getType());
         console.log(event);
     })
-    client.once('sync', function(state, prevState, res) {
+    client.on('sync', function(state, prevState, res) {
         console.log("Matrix client sync state updated. New state:", state); 
         if (state == "PREPARED" && typeof callback == 'function'){
             callback(...args);

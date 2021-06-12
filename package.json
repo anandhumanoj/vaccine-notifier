@@ -1,7 +1,8 @@
 {
   "dependencies": {
     "matrix-js-sdk": "^11.2.0",
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^2.6.1",
+    "user-agents": "^1.0.681"
   },
   "name": "vaccine-hunter",
   "version": "1.0.0",

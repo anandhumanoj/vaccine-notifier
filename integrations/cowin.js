@@ -1,7 +1,8 @@
 import fetch from 'node-fetch'
 
-const debug = !!process.env.ENABLE_DEBUG;
+import { getErrorJSON } from "../lib/api";
 
+const debug = !!process.env.ENABLE_DEBUG;
 
 const getCurrentDate = () => {
     var today = new Date();
@@ -39,7 +40,7 @@ const generateAPIResult = (data) => {
     }
     return {
         available: data.available_capacity,
-        min_age: data.min_age,
+        min_age: data.min_age_limit,
         vaccine: data.vaccine,
         date: data.date
     }
@@ -70,11 +71,13 @@ const fetchFromCowinAPI = () => {
         }
         return new Promise((resolve, reject) =>{
             var result = generateAPIResult(parseAPIResponse(data));
-            if(result.status < 500){
-                resolve(result);
-            } else {
+            if(debug){
+                console.log("Restructured response: ", result);
+            }
+            if(typeof result.status === 'number' && result.status >= 500){
                 reject(result);
             }
+            resolve(result);
         });
       }).catch(error =>{
           throw error;

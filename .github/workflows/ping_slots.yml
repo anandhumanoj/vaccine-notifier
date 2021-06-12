@@ -3,6 +3,7 @@ name: Ping the URL
 on:
   schedule:
     - cron:  '* */3 * * *'
+  workflow_dispatch:
 
 jobs:
   slot_ping_job:

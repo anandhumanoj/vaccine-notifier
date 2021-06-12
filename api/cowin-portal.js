@@ -13,6 +13,7 @@ module.exports = (req, res) => {
     "method": "GET",
     "mode": "cors"
   }).then(response =>{
+    console.log(response);
     res.json({
       response:response
     })

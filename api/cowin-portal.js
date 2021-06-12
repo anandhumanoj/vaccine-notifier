@@ -12,12 +12,11 @@ module.exports = (req, res) => {
     "referrer": "https://www.cowin.gov.in/",
     "method": "GET",
     "mode": "cors"
-  }).then(response =>{
-    console.log(response);
+  }).then(response => response.json())
+  .then(data =>{
     res.json({
-      response:response
+      response:data
     })
-
   }).catch(error =>{
     console.error(error);
   });

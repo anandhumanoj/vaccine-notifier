@@ -1,3 +1,5 @@
+import fetch from 'node-fetch'
+
 module.exports = async (req, res) => {
   
   var response = await fetch("https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?pincode=685515&date=12-06-2021", {

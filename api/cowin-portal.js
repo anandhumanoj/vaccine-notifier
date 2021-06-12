@@ -4,7 +4,7 @@ import {getErrorJSON} from '../lib/api'
 
 const debug = !!process.env.ENABLE_DEBUG;
 
-const constructSuccessMessage = (cowinResponse) => {
+const buildSuccessNotificationMessage = (cowinResponse) => {
   var message = 
 `Hey You!,
 ${cowinResponse.vaccine} is available at the configured facility. 
@@ -15,10 +15,21 @@ Book now! ✨✨✨`;
   return message;
 }
 
+const buildInvokeNotificationMessage = (cowinResponse) => {
+  return "No slots available. Executed at: " + new Date();
+}
+
+const invokeNotify = (res, cowinResponse) => {
+  if(debug){
+    return sendNotification(buildInvokeNotificationMessage(cowinResponse));
+  }
+  return new Promise().resolve();
+}
+
 module.exports = (req, res) => {
   fetchFromCowinAPI().then(response =>{
     if(response.available > 0){
-      sendNotification(constructSuccessMessage(response)).then(resp => {
+      sendNotification(buildSuccessNotificationMessage(response)).then(resp => {
         res.status(200).send({
           status: 200,
           message: "Hurry! free allotment found, Book Now!",
@@ -26,9 +37,11 @@ module.exports = (req, res) => {
         });
       });
     }
-    res.status(200).send({
-      status: 200,
-      message: "No slot available this time"
+    invokeNotify(res, response).then(_ => {
+      res.status(200).send({
+        status: 200,
+        message: "No slot available this time"
+      });
     });
   }).catch(error => {
     console.error(error);

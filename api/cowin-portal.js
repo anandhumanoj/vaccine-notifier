@@ -1,6 +1,6 @@
 import fetch from 'node-fetch'
 
-const debug = !!process.env.ENABLE_DEBUG;
+const debug = true; //!!process.env.ENABLE_DEBUG;
 
 const getCurrentDate = () =>{
   var today = new Date();
@@ -45,7 +45,7 @@ const generateAPIResult = (data) => {
   }
   return {
     available: data.available_capacity,
-    min_age: data.min_age,
+    min_age: data.min_age ,
     vaccine: data.vaccine,
     date: data.date
   }

@@ -19,9 +19,17 @@ module.exports = (req, res) => {
   fetchFromCowinAPI().then(response =>{
     if(response.available > 0){
       sendNotification(constructSuccessMessage(response)).then(resp => {
-        res.status(200).send({status: 200});
+        res.status(200).send({
+          status: 200,
+          message: "Hurry! free allotment found, Book Now!",
+          raw_response: response
+        });
       });
     }
+    res.status(200).send({
+      status: 200,
+      message: "No slot available this time"
+    });
   }).catch(error => {
     console.error(error);
     res.status(500).json(getErrorJSON());

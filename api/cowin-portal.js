@@ -20,7 +20,7 @@ const buildInvokeNotificationMessage = (cowinResponse) => {
 }
 
 const buildFailureNotificationMesssage = (error) => {
-  return "Error occured during execution: error:" + error.toString();
+  return "Error occured during execution: error:" + JSON.stringify(error);  
 }
 
 const invokeDebugNotifier = (res, message) => {

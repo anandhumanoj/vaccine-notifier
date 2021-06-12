@@ -27,7 +27,7 @@ const sendNotificationImpl = async (message) => {
     });
 }
 
-const sendNotification = (message) => withConnection(sendNotificationImpl,message)
+const sendNotification = async (message) => withConnection(sendNotificationImpl,message)
 
 export {
     sendNotification

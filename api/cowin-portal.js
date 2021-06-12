@@ -50,7 +50,7 @@ module.exports = (req, res) => {
   }).catch(error => {
     console.error(error);
     invokeDebugNotifier(res, buildFailureNotificationMesssage(error)).then(_ => {
-      res.status(500).json(getErrorJSON());
+      res.status(res.query.disable_status_codes ? 200 : 500).json(getErrorJSON());
     });
   });
 }

@@ -1,5 +1,7 @@
 import fetch from 'node-fetch'
 
+const debug = !!process.env.ENABLE_DEBUG;
+
 const getCurrentDate = () =>{
   var today = new Date();
   var dd = today.getDate();
@@ -25,9 +27,22 @@ const parseAPIResponse = (response) => {
       return session;
     }
   }
+  return {
+    __parse_failure: true
+  }
 };
 
+const getErrorJSON = () => {
+  return {
+    status: 500,
+    message: "Internal Server Error"
+  };
+}
+
 const generateAPIResult = (data) => {
+  if (data.__parse_failure){
+    return getErrorJSON();
+  }
   return {
     available: data.available_capacity,
     min_age: data.min_age,
@@ -41,7 +56,9 @@ module.exports = (req, res) => {
   const today = getCurrentDate();
 
   const URL = `https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?pincode=${pincode}&date=${today}`
-  
+  if(debug) {
+    console.log(`Constructed CoWin URL: ${URL}`);
+  }
   fetch(URL, {
     "credentials": "omit",
     "headers": {
@@ -54,9 +71,12 @@ module.exports = (req, res) => {
     "mode": "cors"
   }).then(response => response.json())
   .then(data =>{
+    if(debug){
+      console.log("API response from upstream CoWin API", data);
+    }
     res.json(generateAPIResult(parseAPIResponse(data)))
   }).catch(error =>{
     console.error(error);
-    res.status(500).json({status: 500, message: "Internal Server Error"});
+    res.status(500).json(getErrorJSON());
   });
 }

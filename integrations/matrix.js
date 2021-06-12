@@ -10,18 +10,16 @@ const withConnection = (callback, ...args) => {
     });
     console.log('Starting matrix client');
     client.startClient();
-    var clientState = '';
-    console.log('Waiting for sync completion');
+    console.log('Starting matrix /sync call');
     client.once('sync', (state, prevState, res) => {
         console.log("Matrix client sync state updated. New state:", state); 
-        clientState = state;
+        console.log("Callback is: ", callback, args);
+        if (state == "PREPARED" && typeof callback == 'function'){
+            console.log("Executing callback: ", callback, args);
+            callback(...args);
+            client.close()
+        }
     });
-    console.log("Callback is: ", callback, args);
-    if (clientState == "PREPARED" && typeof callback == 'function'){
-
-        console.log("Executing callback: ", callback, args);
-        callback(...args);
-    }
     console.log("withConnection end");
 }
 
@@ -34,7 +32,7 @@ const sendNotificationImpl = (message) => {
     }
 
     client.sendEvent(roomId, "m.room.message", notificationContent, "").then((res) => {
-        console.log("Notification sent successfully. Here is the response from matrix:", response);
+        console.log("Notification sent successfully. Here is the response from matrix:", res);
     }).catch((err) => {
         console.log("Couldn't sent notification, error:", err);
     });

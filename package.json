@@ -2,5 +2,19 @@
   "dependencies": {
     "matrix-js-sdk": "^11.2.0",
     "node-fetch": "^2.6.1"
+  },
+  "name": "vaccine-hunter",
+  "version": "1.0.0",
+  "main": "matrix-integration.js",
+  "repository": "https://github.com/anandhumanoj/vaccine-hunter.git",
+  "author": "anandhumanoj <anandhumanoj282@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "node api/matrix-integration.js"
+  },
+  "devDependencies": {
+    "esm": "^3.2.25",
+    "mock-req-res": "^1.2.0",
+    "sinon": "^11.1.1"
   }
 }

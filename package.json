@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "matrix-js-sdk": "^11.2.0",
     "node-fetch": "^2.6.1"
   }
 }

@@ -2,15 +2,22 @@ import sdk from 'matrix-js-sdk'
 
 const client = null;
 
-const connectClient = () => {
+const withConnection = (callback, ...args) => {
     client = sdk.createClient({
         baseUrl: "https://matrix.org",
         accessToken: process.env.MATRIX_ACCESS_TOKEN,
         userId: process.env.MATRIX_USER_ID
     });
+    client.startClient();
+    client.once('sync', function(state, prevState, res) {
+        console.log("Matrix client sync state updated. New state:", state); 
+        if (state == "PREPARED" && typeof callback == 'function'){
+            callback(...args);
+        }
+    });
 }
 
-const sendNotification = (message) => {
+const sendNotificationImpl = (message) => {
     var roomId = process.env.MATRIX_TARGET_ROOM_ID;
 
     const notificationContent = {
@@ -24,6 +31,8 @@ const sendNotification = (message) => {
         console.log("Couldn't sent notification, error:", err);
     });
 }
+
+const sendNotification = (message) => withConnection(sendNotificationImpl,message)
 
 export {
     sendNotification

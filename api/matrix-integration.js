@@ -1,6 +1,8 @@
 import { sendNotification } from '../integrations/matrix';
 
-module.exports = (req,res) => {
-  sendNotification("Integration testing, Ignore.");
-  res.send(200);
+module.exports = async (req,res) => {
+  sendNotification("Integration testing, Ignore.")
+  .then(response => {
+    res.send(200);
+  });
 }

@@ -9,7 +9,7 @@ const withConnection = async (callback, ...args) => {
         userId: process.env.MATRIX_USER_ID
     });
     console.log('Executing ', callback, args);
-    await callback(...args);
+    return callback(...args);
 }
 
 const sendNotificationImpl = async (message) => {
@@ -19,12 +19,7 @@ const sendNotificationImpl = async (message) => {
         "body": message,
         "msgtype": "m.text"
     }
-
-    await client.sendEvent(roomId, "m.room.message", notificationContent, "").then((res) => {
-        console.log("Notification sent successfully. Here is the response from matrix:", res);
-    }).catch((err) => {
-        console.log("Couldn't sent notification, error:", err);
-    });
+    return client.sendEvent(roomId, "m.room.message", notificationContent, "");
 }
 
 const sendNotification = async (message) => withConnection(sendNotificationImpl,message)

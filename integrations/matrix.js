@@ -1,6 +1,6 @@
 import sdk from 'matrix-js-sdk'
 
-const client = null;
+var client = null;
 
 const withConnection = (callback, ...args) => {
     client = sdk.createClient({

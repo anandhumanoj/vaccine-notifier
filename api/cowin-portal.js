@@ -1,8 +1,8 @@
 import fetch from 'node-fetch'
 
-module.exports = async (req, res) => {
+module.exports = (req, res) => {
   
-  var response = await fetch("https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?pincode=685515&date=12-06-2021", {
+  fetch("https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?pincode=685515&date=12-06-2021", {
     "credentials": "omit",
     "headers": {
         "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0",
@@ -12,8 +12,12 @@ module.exports = async (req, res) => {
     "referrer": "https://www.cowin.gov.in/",
     "method": "GET",
     "mode": "cors"
+  }).then(response =>{
+    res.json({
+      response:response
+    })
+
+  }).catch(error =>{
+    console.error(error);
   });
-  res.json({
-    response:response
-  })
 }

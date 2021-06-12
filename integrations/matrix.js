@@ -9,8 +9,8 @@ const withConnection = (callback, ...args) => {
         userId: process.env.MATRIX_USER_ID
     });
     client.startClient();
-    clientState = '';
-    client.once('sync', function(state, prevState, res) {
+    var clientState = '';
+    client.once('sync', (state, prevState, res) => {
         console.log("Matrix client sync state updated. New state:", state); 
         clientState = state;
     });

@@ -19,9 +19,13 @@ const buildInvokeNotificationMessage = (cowinResponse) => {
   return "No slots available. Executed at: " + new Date();
 }
 
-const invokeNotify = (res, cowinResponse) => {
+const buildFailureNotificationMesssage = (error) => {
+  return "Error occured during execution: error:" + error.toString();
+}
+
+const invokeDebugNotifier = (res, message) => {
   if(debug){
-    return sendNotification(buildInvokeNotificationMessage(cowinResponse));
+    return sendNotification(message).catch(_ => new Promise().resolve());
   }
   return new Promise().resolve();
 }
@@ -37,7 +41,7 @@ module.exports = (req, res) => {
         });
       });
     }
-    invokeNotify(res, response).then(_ => {
+    invokeDebugNotifier(res, buildInvokeNotificationMessage(response)).then(_ => {
       res.status(200).send({
         status: 200,
         message: "No slot available this time"
@@ -45,6 +49,8 @@ module.exports = (req, res) => {
     });
   }).catch(error => {
     console.error(error);
-    res.status(500).json(getErrorJSON());
+    invokeDebugNotifier(res, buildFailureNotificationMesssage(error)).then(_ => {
+      res.status(500).json(getErrorJSON());
+    });
   });
 }

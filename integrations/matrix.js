@@ -15,6 +15,10 @@ const withConnection = (callback, ...args) => {
             callback(...args);
         }
     });
+    client.on("event", function(event){
+        console.log(event.getType());
+        console.log(event);
+    })
 }
 
 const sendNotificationImpl = (message) => {

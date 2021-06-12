@@ -2,7 +2,7 @@ name: Ping the URL
 # This workflow is triggered at a scheduled interval of every 30 minutes
 on:
   schedule:
-    - cron:  '17/30 * * * *'
+    - cron:  '*/5 * * * *'
   workflow_dispatch:
 
 jobs:

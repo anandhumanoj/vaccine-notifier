@@ -1,0 +1,16 @@
+name: Ping the URL
+# This workflow is triggered at a scheduled interval of every 30 minutes
+on:
+  schedule:
+    - cron:  '*/5 * * * *'
+  workflow_dispatch:
+
+jobs:
+  slot_ping_job:
+    name: Ping Job
+    runs-on: ubuntu-latest
+    env:
+      URL: ${{ secrets.SLOT_URL }}
+    steps:
+      - id: ping
+        uses: sisodiya2421/pinger@master

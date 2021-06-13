@@ -5,14 +5,11 @@
     "user-agents": "^1.0.681",
     "esm": "^3.2.25"
   },
-  "name": "vaccine-hunter",
+  "name": "vaccine-notifier",
   "version": "1.0.0",
-  "main": "matrix-integration.js",
-  "repository": "https://github.com/anandhumanoj/vaccine-hunter.git",
   "author": "anandhumanoj <anandhumanoj282@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "node api/matrix-integration.js"
   },
   "devDependencies": {
     "mock-req-res": "^1.2.0",

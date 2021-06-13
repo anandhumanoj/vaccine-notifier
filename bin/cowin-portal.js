@@ -10,8 +10,12 @@ var resMock = {
         console.log("Status: ", this.sendStatus);
         console.log("Response: ", JSON.stringify(this.sendData))
     },
-    status: function(status){
+    json: function(json) {
+        this.send(json);
+    },
+    status: function(status) {
         this.sendStatus = status
+        return this;
     }
 }
 

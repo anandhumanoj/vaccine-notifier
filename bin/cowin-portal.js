@@ -1,4 +1,6 @@
-import cowinPortalAPI from "../api/cowin-portal";
+require = require("esm")(module);
+
+const cowinPortalAPI = require('../api/cowin-portal')
 
 var resMock = {
     sendData: {},

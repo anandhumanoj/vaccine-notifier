@@ -25,8 +25,8 @@ const buildFailureNotificationMesssage = (error) => {
   return "Error occured during execution.\r\n Cause:" + JSON.stringify(error);
 }
 
-const invokeDebugNotifier = (res, message) => {
-  if (debug) {
+const invokeDebugNotifier = (res, message, forceNotify) => {
+  if (debug || forceNotify) {
     return sendNotification(message).catch(_ => new Promise(() => null).resolve());
   }
   return new Promise(() => null).resolve();
@@ -58,6 +58,6 @@ module.exports = (req, res) => {
     console.error(error);
     invokeDebugNotifier(res, buildFailureNotificationMesssage(error)).then(_ => {
       res.status(req.query.disable_status_codes ? 200 : 500).send(getErrorJSON());
-    });
+    }, true);
   });
 }

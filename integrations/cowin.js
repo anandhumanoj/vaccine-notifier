@@ -79,7 +79,7 @@ const fetchFromCowinAPI = () => {
                     console.log("Restructured response: ", result);
                 }
                 if (typeof result.status === 'number' && result.status >= 500) {
-                    reject(result);
+                    reject(data);
                 }
                 resolve(result);
             });

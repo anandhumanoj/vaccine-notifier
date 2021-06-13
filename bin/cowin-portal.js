@@ -15,4 +15,10 @@ var resMock = {
     }
 }
 
-cowinPortalAPI({}, resMock);
+var reqMock = {
+    query: {},
+    body: {},
+    params: {}
+}
+
+cowinPortalAPI(reqMock, resMock);

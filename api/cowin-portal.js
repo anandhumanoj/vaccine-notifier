@@ -27,9 +27,9 @@ const buildFailureNotificationMesssage = (error) => {
 
 const invokeDebugNotifier = (res, message, forceNotify) => {
   if (debug || forceNotify) {
-    return sendNotification(message).catch(_ => new Promise(() => null).resolve());
+    return sendNotification(message).catch(_ => Promise.resolve());
   }
-  return new Promise(() => null).resolve();
+  return Promise.resolve();
 }
 
 module.exports = (req, res) => {

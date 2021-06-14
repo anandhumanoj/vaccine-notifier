@@ -7,6 +7,8 @@ const debug = !!process.env.ENABLE_DEBUG;
 const buildSuccessNotificationMessage = (cowinResponse) => {
   var message =
 `<b>${cowinResponse.name} ${cowinResponse.address}</b>
+<br/>
+<br/>
 <pre>
 Pin Code : ${cowinResponse.pincode}
 Available: ${cowinResponse.available}
@@ -16,7 +18,8 @@ Date  | Dose 1 | Dose 2 | Vaccine
 ---------------------------------
 ${cowinResponse.date} | ${cowinResponse.available_dose1} |  ${cowinResponse.available_dose2} | ${cowinResponse.vaccine}
 ---------------------------------
-</pre>`
+</pre>
+<br/>`
   return message;
 }
 

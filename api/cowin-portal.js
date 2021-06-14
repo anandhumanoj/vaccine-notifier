@@ -18,7 +18,7 @@ Book now! ✨✨✨`;
 }
 
 const buildInvokeNotificationMessage = (cowinResponse) => {
-  return "No slots available at monitored locations.";
+  return "No slots available at the monitoring locations: " + process.env.PIN_CODES;
 }
 
 const buildFailureNotificationMesssage = (error) => {

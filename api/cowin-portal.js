@@ -6,23 +6,26 @@ const debug = !!process.env.ENABLE_DEBUG;
 
 const buildSuccessNotificationMessage = (cowinResponse) => {
   var message =
-    `Hey You!,
-${cowinResponse.vaccine} is available at ${cowinResponse.name}, ${cowinResponse.address}. 
-  Number of slot available: ${cowinResponse.available}
-  Dose 1: ${cowinResponse.available_dose1}
-  Dose 2: ${cowinResponse.available_dose2}
-  Date: ${cowinResponse.date}
-  Minimum age limit: ${cowinResponse.min_age_limit}
-Book now! ✨✨✨`;
+`<b>${cowinResponse.name} ${cowinResponse.address}</b>
+Pin Code : ${cowinResponse.pincode}
+Available: ${cowinResponse.available}
+Min Age  : ${cowinResponse.min_age_limit}
+=================================
+Date  | Dose 1 | Dose 2 | Vaccine
+---------------------------------
+${cowinResponse.date} | ${cowinResponse.available_dose1} |  ${cowinResponse.available_dose2} | ${cowinResponse.vaccine}
+---------------------------------`
   return message;
 }
 
 const buildInvokeNotificationMessage = (cowinResponse) => {
-  return "No slots available at the monitoring locations: " + process.env.PIN_CODES;
+  return 
+`No slots available at monitored locations
+${process.env.PIN_CODES}`;
 }
 
 const buildFailureNotificationMesssage = (error) => {
-  return "Error occured during execution.\r\n Cause:" + JSON.stringify(error);
+  return "Error occured during execution.\r\nCause:" + JSON.stringify(error);
 }
 
 const invokeDebugNotifier = (res, message, forceNotify) => {

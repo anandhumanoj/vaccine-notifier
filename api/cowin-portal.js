@@ -24,8 +24,7 @@ ${cowinResponse.date} | ${cowinResponse.available_dose1} |  ${cowinResponse.avai
 }
 
 const buildInvokeNotificationMessage = (cowinResponse) => {
-  return 
-`No slots available at monitored locations
+  return `No slots available at monitored locations
 ${process.env.PIN_CODES}`;
 }
 

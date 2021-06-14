@@ -43,8 +43,8 @@ const parseAPIResponse = (response) => {
                             matched_row.name = center.name;
                             matched_row.pincode = center.pincode;
                             matched_row.address = center.address;
-                            matched_row.date = center.date;
                             
+                            matched_row.date = session.date;
                             matched_row.available = session.available_capacity;
                             matched_row.available_dose1 = session.available_capacity_dose1;
                             matched_row.available_dose2 = session.available_capacity_dose2;

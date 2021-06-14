@@ -17,7 +17,9 @@ const sendNotificationImpl = async (message) => {
 
     const notificationContent = {
         "body": message,
-        "msgtype": "m.text"
+        "msgtype": "m.text",
+        "format": "org.matrix.custom.html",
+        "formatted_body": message
     }
     return client.sendEvent(roomId, "m.room.message", notificationContent, "");
 }

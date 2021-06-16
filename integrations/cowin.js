@@ -1,7 +1,7 @@
 import fetch from 'node-fetch'
 import UserAgent from 'user-agents';
 
-import { getErrorJSON } from "../lib/api";
+import { getErrorJSON } from "../utils/messages";
 
 const debug = !!process.env.ENABLE_DEBUG;
 const PIN_CODES = (process.env.PIN_CODES || process.env.PIN_CODE || "").split(',').map(val => val.trim());

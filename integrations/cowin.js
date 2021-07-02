@@ -5,7 +5,7 @@ import { getErrorJSON } from "../utils/messages";
 
 const debug = !!process.env.ENABLE_DEBUG;
 const PIN_CODES = (process.env.PIN_CODES || process.env.PIN_CODE || "").split(',').map(val => val.trim());
-const MIN_AGE_LIMITS = (process.env.MIN_AGE__LIMITS || "18,40,45").split(',').map(val => Number.parseInt(val.trim()));
+const MIN_AGE_LIMITS = (process.env.MIN_AGE_LIMITS || "18,40,45").split(',').map(val => Number.parseInt(val.trim()));
 
 // let DEFAULT_URL_TYPE = Math.floor(Math.random() * URL_TYPE.length)
 let DEFAULT_URL_TYPE = 1; // DISTRICT only mode

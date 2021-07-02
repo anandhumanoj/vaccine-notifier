@@ -7,9 +7,7 @@ module.exports = (req, res) => {
   fetchFromCowinAPI().then(async centers => {
     let notificationMessage = "";
     for (let center in centers) {
-      if (centers[center].available > 0) {
-        notificationMessage += messages.getSuccessMessage(centers[center]);
-      }
+      notificationMessage += messages.getSuccessMessage(centers[center]);
     }
     if (notificationMessage !== "") {
       await sendNotification(notificationMessage);

@@ -14,18 +14,21 @@ const PIN_CODES = (process.env.PIN_CODES || process.env.PIN_CODE || "").split(',
  */
 const AGE_AND_DOSE_CRITERIA = {};
 (process.env.AGE_AND_DOSE_CRITERIA || "18:0,40:0,45:0")
-    .split(',').forEach(val => {
-        
-        let criteria = val.trim().split(':');
-        if(criteria.length == 2){
-            AGE_AND_DOSE_CRITERIA[Number.parseInt(criteria[0])] = Number.parseInt(criteria[1]);
-        }
-    });
-
+.split(',').forEach(val => {
+    
+    let criteria = val.trim().split(':');
+    if(criteria.length == 2){
+        AGE_AND_DOSE_CRITERIA[Number.parseInt(criteria[0])] = Number.parseInt(criteria[1]);
+    }
+});
 const dosageKeys = ["available_capacity", "available_capacity_dose1", "available_capacity_dose2"];
 
 // let DEFAULT_URL_TYPE = Math.floor(Math.random() * URL_TYPE.length)
-let DEFAULT_URL_TYPE = 1; // DISTRICT only mode
+
+/**
+ * DISTRICT-only mode is hardcoded for compatibility for now
+ */
+let DEFAULT_URL_TYPE = 1;
 
 const URL_TYPES = [
     'PIN_CODE',

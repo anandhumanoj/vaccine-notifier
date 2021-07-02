@@ -4,6 +4,7 @@ import UserAgent from 'user-agents';
 import { getErrorJSON } from "../utils/messages";
 
 const debug = !!process.env.ENABLE_DEBUG;
+const DISTRICT_IDS = (process.env.DISTRICT_IDS || process.env.DISTRICT_ID || "").split(',').map(val => val.trim()); ;
 const PIN_CODES = (process.env.PIN_CODES || process.env.PIN_CODE || "").split(',').map(val => val.trim());
 /**
  * Format, <age>:<dose>
@@ -23,18 +24,6 @@ const AGE_AND_DOSE_CRITERIA = {};
 });
 const dosageKeys = ["available_capacity", "available_capacity_dose1", "available_capacity_dose2"];
 
-// let DEFAULT_URL_TYPE = Math.floor(Math.random() * URL_TYPE.length)
-
-/**
- * DISTRICT-only mode is hardcoded for compatibility for now
- */
-let DEFAULT_URL_TYPE = 1;
-
-const URL_TYPES = [
-    'PIN_CODE',
-    'DISTRICT'
-]
-
 const getCurrentDate = () => {
     var today = new Date();
     var dd = today.getDate();
@@ -53,7 +42,7 @@ const getCurrentDate = () => {
 
 
 const parseAPIResponse = (response) => {
-    var availableCenters = {};
+    var availableCenters = [];
     if (Array.isArray(response.centers)) {
         response.centers.forEach((center) => {
             if (PIN_CODES.includes(center.pincode.toString())) {
@@ -72,7 +61,7 @@ const parseAPIResponse = (response) => {
                             availableCenter.available_dose2 = session.available_capacity_dose2;
                             availableCenter.min_age_limit = session.min_age_limit;
                             availableCenter.vaccine = session.vaccine;
-                            availableCenters[center.pincode + '__' + session.min_age_limit] = availableCenter;
+                            availableCenters.push(availableCenter);
                         }
                     });
                 }
@@ -83,30 +72,20 @@ const parseAPIResponse = (response) => {
     return getErrorJSON();
 };
 
-const generateAPIUrl = () => {
-    
-    let URL = "";
+const generateAPIUrl = (districtId) => {
     const today = getCurrentDate();
-
-    switch (URL_TYPES[DEFAULT_URL_TYPE]) {
-        case 'PIN_CODE':
-            const pincode = process.env.PIN_CODE;
-            URL = `https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?pincode=${pincode}&date=${today}`;
-            break;
-        case 'DISTRICT':
-            const district_id = process.env.DISTRICT_ID
-            URL = `https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id=${district_id}&date=${today}`;
-            break;
+    let URL = `https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id=${districtId}&date=${today}`;
+    if (debug) {
+        console.log(`Constructed CoWin URL: ${URL}`);
     }
-    return [URL, URL_TYPES[DEFAULT_URL_TYPE]];
+    return URL;
 }
 
-const constructURL = () => {
+const constructURL = (districtId) => {
     const randomUserAgent = new UserAgent().random().toString();
-    const [url, urlType] = generateAPIUrl();
+    const url = generateAPIUrl(districtId);
     return {
         url: url,
-        type: urlType,
         opts: {
             "credentials": "omit",
             "headers": {
@@ -121,30 +100,32 @@ const constructURL = () => {
     }
 }
 
-const fetchFromCowinAPI = () => {
-    const urlSpec = constructURL();
-    if (debug) {
-        console.log(`Constructed CoWin URL: ${urlSpec.url}`);
-    }
-    return fetch(urlSpec.url, urlSpec.opts)
-        .then(response => response.json())
-        .then(data => {
+const fetchFromCowinAPI = async () => {
+    return new Promise(async (resolve, reject) => {
+        let result = [];
+        let failures = [];
+        for(let district of DISTRICT_IDS){
+            let urlSpec = constructURL(district);
+            let rawResponse = await fetch(urlSpec.url, urlSpec.opts).then(response => response.json());
             if (debug) {
-                console.log("API response from upstream CoWin API", data);
+                console.log("Upstream CoWin API response", rawResponse);
             }
-            return new Promise((resolve, reject) => {
-                var result = parseAPIResponse(data);
-                if (debug) {
-                    console.log("Restructured response: ", result);
-                }
-                if (typeof result.status === 'number' && result.status >= 500) {
-                    reject(data);
-                }
-                resolve(result);
-            });
-        });
+            let response = parseAPIResponse(rawResponse);
+            if (typeof response.status === 'number' && response.status >= 500) {
+                failures.push({district_id: district, response: rawResponse});
+                continue;
+            }
+            result = result.concat(response);
+        }
+        if(failures.length == DISTRICT_IDS.length){
+            reject(failures);
+        }
+        if (debug) {
+            console.log("Returning response: ", result);
+        }
+        resolve(result);
+    });
 }
-
 
 export {
     fetchFromCowinAPI

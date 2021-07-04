@@ -1,33 +1,17 @@
-import { fetchFromCowinAPI } from '../integrations/cowin'
-import * as messages from '../utils/messages'
-import {sendNotification, invokeDebugNotifier} from '../utils/notification'
+import { triggerCowinNotifications } from '../core/cowin-notify'
+import { getGlobalConfig } from '../utils/config-parser'
+import { getErrorJSON } from '../utils/messages'
 
+const globalConfig = getGlobalConfig();
 
 module.exports = (req, res) => {
-  fetchFromCowinAPI().then(async centers => {
-    let notificationMessage = "<br/><br/>";
-    for (let center of centers) {
-      notificationMessage += messages.getShortSuccessMessage(center);
-    }
-    notificationMessage += "<hr/>"
-    if (centers.length > 0) {
-      await sendNotification(notificationMessage);
+    triggerCowinNotifications(globalConfig.cowin).then(_ => {
       res.status(200).send({
         status: 200,
-        message: "Hurry! free allotment(s) found, Book Now!",
+        message: "Notifications triggered",
       });
-    } else {
-      invokeDebugNotifier(messages.getNotAvailableMessage(process.env.PIN_CODES)).then(_ => {
-        res.status(200).send({
-          status: 200,
-          message: "No slot available this time"
-        });
-      });
-    }
-  }).catch(error => {
-    console.error(error);
-    invokeDebugNotifier(messages.getErrorMessage(error), true).then(_ => {
+    }).catch(error => {
+      console.log(error);
       res.status(req.query.disable_status_codes ? 200 : 500).send(getErrorJSON());
-    });
-  });
+    })
 }

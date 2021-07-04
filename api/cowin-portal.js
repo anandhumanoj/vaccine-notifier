@@ -10,7 +10,7 @@ module.exports = (req, res) => {
       notificationMessage += messages.getShortSuccessMessage(center);
     }
     notificationMessage += "<hr/>"
-    if (notificationMessage !== "") {
+    if (centers.length > 0) {
       await sendNotification(notificationMessage);
       res.status(200).send({
         status: 200,

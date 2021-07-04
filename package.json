@@ -1,16 +1,15 @@
 {
   "dependencies": {
+    "esm": "^3.2.25",
     "matrix-js-sdk": "^11.2.0",
     "node-fetch": "^2.6.1",
-    "user-agents": "^1.0.681",
-    "esm": "^3.2.25"
+    "user-agents": "^1.0.681"
   },
   "name": "vaccine-notifier",
   "version": "1.0.0",
   "author": "anandhumanoj <anandhumanoj282@gmail.com>",
   "license": "MIT",
-  "scripts": {
-  },
+  "scripts": {},
   "devDependencies": {
     "mock-req-res": "^1.2.0",
     "sinon": "^11.1.1"

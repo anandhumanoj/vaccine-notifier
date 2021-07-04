@@ -5,10 +5,11 @@ import {sendNotification, invokeDebugNotifier} from '../utils/notification'
 
 module.exports = (req, res) => {
   fetchFromCowinAPI().then(async centers => {
-    let notificationMessage = "";
+    let notificationMessage = "<br/><br/>";
     for (let center of centers) {
-      notificationMessage += messages.getSuccessMessage(center);
+      notificationMessage += messages.getShortSuccessMessage(center);
     }
+    notificationMessage += "<hr/>"
     if (notificationMessage !== "") {
       await sendNotification(notificationMessage);
       res.status(200).send({

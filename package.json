@@ -3,6 +3,8 @@
     "esm": "^3.2.25",
     "matrix-js-sdk": "^11.2.0",
     "node-fetch": "^2.6.1",
+    "node-telegram-bot-api": "^0.53.0",
+    "turndown": "^7.1.1",
     "user-agents": "^1.0.681"
   },
   "name": "vaccine-notifier",

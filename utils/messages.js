@@ -27,6 +27,10 @@ ${data.date} | ${data.available_dose1}     |  ${data.available_dose2}     | ${da
   return message;
 }
 
+const getShortSuccessMessage = (data) => {
+  return `<br/>${data.name} - ${data.pincode} ( ${data.min_age_limit}+ )<br/>Dose 1 : ${data.available_dose1} | Dose 2 : ${data.available_dose2} | ${data.vaccine}<br/><br/>`
+}
+
 const getNotAvailableMessage = (locations) => {
   return `<br/><br/>No slots available at monitored locations
   ${locations}`;
@@ -40,6 +44,7 @@ const getErrorMessage = (error) => {
 
 export {
   getSuccessMessage,
+  getShortSuccessMessage,
   getNotAvailableMessage,
   getErrorJSON,
   getErrorMessage

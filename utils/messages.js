@@ -28,7 +28,8 @@ ${data.date} | ${data.available_dose1}     |  ${data.available_dose2}     | ${da
 }
 
 const getShortSuccessMessage = (data) => {
-  return `<br/>${data.name} - ${data.pincode} ( ${data.min_age_limit}+ )<br/>Dose 1 : ${data.available_dose1} | Dose 2 : ${data.available_dose2} | ${data.vaccine}<br/><br/>`
+  return `<br/>${data.name} - ${data.pincode} ( ${data.min_age_limit}+ )<br/>`+ 
+  `${data.date} | D1 : ${data.available_dose1} | D2 : ${data.available_dose2} | ${data.vaccine}<br/><br/>`
 }
 
 const getNotAvailableMessage = (locations) => {

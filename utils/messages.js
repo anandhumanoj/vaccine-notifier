@@ -32,8 +32,7 @@ const getShortSuccessMessage = (data) => {
 }
 
 const getNotAvailableMessage = (locations) => {
-  return `<br/><br/>No slots available at monitored locations
-  ${locations}`;
+  return `<br/><br/>No slots available at monitored locations`;
 }
 
 const getErrorMessage = (error) => {

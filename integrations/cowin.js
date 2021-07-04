@@ -45,7 +45,7 @@ const parseAPIResponse = (response) => {
     var availableCenters = [];
     if (Array.isArray(response.centers)) {
         response.centers.forEach((center) => {
-            if (PIN_CODES.includes(center.pincode.toString())) {
+            if (PIN_CODES.includes('*') || PIN_CODES.includes(center.pincode.toString())) {
                 if (Array.isArray(center.sessions)) {
                     center.sessions.forEach( session => {
                         let dosageId = AGE_AND_DOSE_CRITERIA[session.min_age_limit];

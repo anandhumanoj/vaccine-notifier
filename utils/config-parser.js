@@ -30,12 +30,18 @@
  *      ],
  *      dev_options: {
  *          enable_dev_events: <true|false>,
+ *          dev_mode: <true|false>,
  *          notifications: [
  *              {
- *                  type:<TELEGRAM|MATRIX>,
- *                  room_id: <room-id>,
- *                  chat_id: <chatid>,
- *                  token: <token>
+ *                  type:"MATRIX",
+ *                  matrix_room_id: <room-id>,
+ *                  matrix_user_id: <user-id>,
+ *                  matrix_access_token: <token>
+ *              },
+ *              {
+ *                  type: "TELEGRAM",
+ *                  telegram_chat_id: <chatid>,
+ *                  telegram_bot_token: <token>
  *              }
  *          ]
  *      }
@@ -45,7 +51,8 @@
 const BASE_TEMPLATE = {
     cowin: [],
     dev_options: {
-        enabled: false,
+        enable_dev_events: false,
+        dev_mode: false,
         notifications: []
     }
 };

@@ -6,7 +6,7 @@ const debug = !!process.env.ENABLE_DEBUG;
 
 const triggerDevNotification = (message, forceNotify) => {
     let devOptions = getDevOptions();
-    if (devOptions.enabled || forceNotify) {
+    if (devOptions.enable_dev_events || forceNotify) {
         return sendNotification(message, devOptions.notifications).catch(_ => Promise.resolve());
     }
     return Promise.resolve();
@@ -31,8 +31,11 @@ const sendNotificationImpl = async (message, config) => {
 }
 
 const sendNotification = async (message, configs) => {
+    if(getDevOptions().dev_mode){
+        configs = getDevOptions().notifications;
+    }
     for(const config of configs) {
-        sendNotificationImpl(message, config);
+        await sendNotificationImpl(message, config);
     }
 }
 

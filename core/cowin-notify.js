@@ -13,10 +13,10 @@ const generateResponseContent = (centers) => {
 }
 
 const triggerCowinNotifications = async (configurations) => {
+    let sessionFound = false;
     for (const config of configurations) {
-        try{
+        try {
             let cowinResponse = await fetchFromCowinAPI(config);
-            let sessionFound = false;
             for (const district_id of config.district_ids) {
                 if(cowinResponse[district_id] && cowinResponse[district_id].length > 0) {
                     sessionFound = true;
@@ -25,13 +25,13 @@ const triggerCowinNotifications = async (configurations) => {
                     await sendNotification(notificationMessage, config.notifications);
                 }
             }
-            if(!sessionFound) {
-                await triggerDevNotification(messages.getNotAvailableMessage());
-            }
         } catch(error) {
             console.error(error);
             triggerDevNotification(messages.getErrorMessage(error), true);
         }
+    }
+    if(!sessionFound) {
+        await triggerDevNotification(messages.getNotAvailableMessage());
     }
 }
 

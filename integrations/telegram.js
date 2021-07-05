@@ -7,5 +7,5 @@ export function sendNotification(message, config) {
 
     var turndownService = new TurndownService()
     message = turndownService.turndown(message)
-    bot.sendMessage(chatId, message, options);
+    bot.sendMessage(chatId, message);
 }

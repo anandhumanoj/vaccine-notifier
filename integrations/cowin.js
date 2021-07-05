@@ -24,34 +24,47 @@ const getCurrentDate = () => {
 }
 
 const getCriteriaForPincode = (criterias, pincode) => {
+    let result = [];
     for(let criteria of criterias){
         if(!Array.isArray(criteria.pincode)){
             continue;
         }
         if(criteria.pincode.includes('*') || criteria.pincode.includes(pincode)){
-            return criteria;
+            result.push(criteria);
         }
     }
+    return result;
 };
 
-const isSessionMatchesCriteria = (session, criteria) => {
-    if (criteria.min_age && session.min_age_limit != criteria.min_age){
-        return false;
+const isSessionMatchesCriteria = (center, session, criterias) => {
+    for (const criteria of criterias) {
+        if (criteria.min_age && session.min_age_limit != criteria.min_age){
+            continue;
+        }
+        if (criteria.max_age && session.max_age_limit != criteria.max_age){
+            continue;
+        }
+        if (criteria.vaccine && session.vaccine != criteria.vaccine){
+            continue;
+        }
+        if (criteria.fee_type && center.fee_type != criteria.fee_type){
+            continue;
+        }
+        if (session[criteria.dosage_key] > 0) {
+            return true;
+        }
     }
-    if (criteria.max_age && session.max_age_limit != criteria.max_age){
-        return false;
-    }
-    return session[criteria.dosage_key] > 0;
+    return false;
 }
 
 const parseAPIResponse = (response, config) => {
     var availableCenters = [];
     if (Array.isArray(response.centers)) {
         response.centers.forEach((center) => {
-            const matchedCriteria = getCriteriaForPincode(config.criteria, center.pincode.toString());
-            if (matchedCriteria && Array.isArray(center.sessions)) {
+            const matchedCriterias = getCriteriaForPincode(config.criteria, center.pincode.toString());
+            if (matchedCriterias.length > 0 && Array.isArray(center.sessions)) {
                 center.sessions.forEach( session => {
-                    if (isSessionMatchesCriteria(session, matchedCriteria)) {
+                    if (isSessionMatchesCriteria(center, session, matchedCriterias)) {
                         var availableCenter = {}
                         availableCenter.name = center.name;
                         availableCenter.pincode = center.pincode;

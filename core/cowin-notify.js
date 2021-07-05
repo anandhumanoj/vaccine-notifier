@@ -18,10 +18,9 @@ const triggerCowinNotifications = async (configurations) => {
             let cowinResponse = await fetchFromCowinAPI(config);
             let sessionFound = false;
             for (const district_id of config.district_ids) {
-                if(cowinResponse[district_id]){
+                if(cowinResponse[district_id]) {
                     sessionFound = true;
                     let notificationMessage = generateResponseContent(cowinResponse[district_id]);
-                    console.log(config.notifications)
                     await sendNotification(notificationMessage, config.notifications);
                 }
             }

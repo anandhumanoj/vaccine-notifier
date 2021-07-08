@@ -108,6 +108,8 @@ const constructURL = (districtId) => {
                 "User-Agent": randomUserAgent,
                 "Accept": "application/json, text/plain, */*",
                 "Accept-Language": "en-US,en;q=0.5",
+                "Cache-Control": "no-cache",
+                "Pragma": "no-cache"
             },
             "referrer": "https://www.cowin.gov.in/",
             "method": "GET",

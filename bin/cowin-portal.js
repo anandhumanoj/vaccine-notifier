@@ -1,28 +1,11 @@
 require = require("esm")(module);
 
-const cowinPortalAPI = require('../api/cowin-portal')
+const cowinNotify = require('../core/cowin-notify');
+const configParser = require('../utils/config-parser');
 
-var resMock = {
-    sendData: {},
-    sendStatus: 200,
-    send: function(json) {
-        this.sendData = json;
-        console.log("Status: ", this.sendStatus);
-        console.log("Response: ", JSON.stringify(this.sendData))
-    },
-    json: function(json) {
-        this.send(json);
-    },
-    status: function(status) {
-        this.sendStatus = status
-        return this;
-    }
-}
-
-var reqMock = {
-    query: {},
-    body: {},
-    params: {}
-}
-
-cowinPortalAPI(reqMock, resMock);
+cowinNotify.triggerCowinNotifications(configParser.getGlobalConfig().cowin)
+.then(_ => {
+    console.log("Success");
+}).catch(error => {
+    console.log("Failed", error);
+});

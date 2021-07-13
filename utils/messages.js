@@ -41,11 +41,20 @@ const getErrorMessage = (error) => {
 <br/>Cause:<pre>${JSON.stringify(error)}</pre>`;
 }
 
+const getHeader = () => {
+  return "<br/><br/>";
+}
+
+const getFooter = () => {
+  return "<hr/>";
+}
 
 export {
   getSuccessMessage,
   getShortSuccessMessage,
   getNotAvailableMessage,
   getErrorJSON,
-  getErrorMessage
+  getErrorMessage,
+  getHeader,
+  getFooter
 }

@@ -2,18 +2,19 @@ import sdk from 'matrix-js-sdk'
 
 var client = null;
 
-const withConnection = async (callback, ...args) => {
-    client = sdk.createClient({
-        baseUrl: "https://matrix.org",
-        accessToken: process.env.MATRIX_ACCESS_TOKEN,
-        userId: process.env.MATRIX_USER_ID
-    });
-    console.log('Executing ', callback, args);
-    return callback(...args);
+const withConnection = async (config, callback, ...args) => {
+    if(!client){
+        client = sdk.createClient({
+            baseUrl: "https://matrix.org",
+            accessToken: config.matrix_access_token,
+            userId: config.matrix_user_id
+        });
+    }
+    return callback(config, ...args);
 }
 
-const sendNotificationImpl = async (message) => {
-    var roomId = process.env.MATRIX_TARGET_ROOM_ID;
+const sendNotificationImpl = async (config, message) => {
+    var roomId = config.matrix_room_id;
 
     const notificationContent = {
         "body": message,
@@ -24,8 +25,9 @@ const sendNotificationImpl = async (message) => {
     return client.sendEvent(roomId, "m.room.message", notificationContent, "");
 }
 
-const sendNotification = async (message) => withConnection(sendNotificationImpl,message)
+const sendNotification = 
+    async (message, config) => withConnection(config, sendNotificationImpl, message);
 
 export {
     sendNotification
-}
+};

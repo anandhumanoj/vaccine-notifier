@@ -4,25 +4,8 @@ import UserAgent from 'user-agents';
 import { getErrorJSON } from "../utils/messages";
 
 const debug = !!process.env.ENABLE_DEBUG;
-const DISTRICT_IDS = (process.env.DISTRICT_IDS || process.env.DISTRICT_ID || "").split(',').map(val => val.trim()); ;
-const PIN_CODES = (process.env.PIN_CODES || process.env.PIN_CODE || "").split(',').map(val => val.trim());
-/**
- * Format, <age>:<dose>
- * where accepted values for 'dose' are
- * 0 -> Any dose
- * 1 -> First dose only
- * 2 -> Second dose only
- */
-const AGE_AND_DOSE_CRITERIA = {};
-(process.env.AGE_AND_DOSE_CRITERIA || "18:0,40:0,45:0")
-.split(',').forEach(val => {
-    
-    let criteria = val.trim().split(':');
-    if(criteria.length == 2){
-        AGE_AND_DOSE_CRITERIA[Number.parseInt(criteria[0])] = Number.parseInt(criteria[1]);
-    }
-});
-const dosageKeys = ["available_capacity", "available_capacity_dose1", "available_capacity_dose2"];
+
+const COWIN_REQUEST_CACHE = {};
 
 const getCurrentDate = () => {
     var today = new Date();
@@ -40,31 +23,64 @@ const getCurrentDate = () => {
 
 }
 
+const getCriteriaForPincode = (criterias, pincode) => {
+    let result = [];
+    for(let criteria of criterias){
+        if(!Array.isArray(criteria.pincode)){
+            continue;
+        }
+        if(criteria.pincode.includes('*') || criteria.pincode.includes(pincode)){
+            result.push(criteria);
+        }
+    }
+    return result;
+};
 
-const parseAPIResponse = (response) => {
+const isSessionMatchesCriteria = (center, session, criterias) => {
+    for (const criteria of criterias) {
+        if (criteria.min_age && session.min_age_limit != criteria.min_age){
+            continue;
+        }
+        if (criteria.max_age && session.max_age_limit != criteria.max_age){
+            continue;
+        }
+        if (criteria.vaccine && session.vaccine != criteria.vaccine){
+            continue;
+        }
+        if (criteria.fee_type && center.fee_type != criteria.fee_type){
+            continue;
+        }
+        if (session[criteria.dosage_key] > 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+const parseAPIResponse = (response, config) => {
     var availableCenters = [];
     if (Array.isArray(response.centers)) {
         response.centers.forEach((center) => {
-            if (PIN_CODES.includes('*') || PIN_CODES.includes(center.pincode.toString())) {
-                if (Array.isArray(center.sessions)) {
-                    center.sessions.forEach( session => {
-                        let dosageId = AGE_AND_DOSE_CRITERIA[session.min_age_limit];
-                        if (dosageId != undefined && session[dosageKeys[dosageId]] > 0) {
-                            var availableCenter = {}
-                            availableCenter.name = center.name;
-                            availableCenter.pincode = center.pincode;
-                            availableCenter.address = center.address;
-                            
-                            availableCenter.date = session.date;
-                            availableCenter.available = session.available_capacity;
-                            availableCenter.available_dose1 = session.available_capacity_dose1;
-                            availableCenter.available_dose2 = session.available_capacity_dose2;
-                            availableCenter.min_age_limit = session.min_age_limit;
-                            availableCenter.vaccine = session.vaccine;
-                            availableCenters.push(availableCenter);
-                        }
-                    });
-                }
+            const matchedCriterias = getCriteriaForPincode(config.criteria, center.pincode.toString());
+            if (matchedCriterias.length > 0 && Array.isArray(center.sessions)) {
+                center.sessions.forEach( session => {
+                    if (isSessionMatchesCriteria(center, session, matchedCriterias)) {
+                        var availableCenter = {}
+                        availableCenter.name = center.name;
+                        availableCenter.pincode = center.pincode;
+                        availableCenter.address = center.address;
+                        
+                        availableCenter.date = session.date;
+                        availableCenter.available = session.available_capacity;
+                        availableCenter.available_dose1 = session.available_capacity_dose1;
+                        availableCenter.available_dose2 = session.available_capacity_dose2;
+                        availableCenter.min_age_limit = session.min_age_limit;
+                        availableCenter.max_age_limit = session.max_age_limit;
+                        availableCenter.vaccine = session.vaccine;
+
+                        availableCenters.push(availableCenter);
+                    }
+                });
             }
         });
         return availableCenters;
@@ -92,6 +108,8 @@ const constructURL = (districtId) => {
                 "User-Agent": randomUserAgent,
                 "Accept": "application/json, text/plain, */*",
                 "Accept-Language": "en-US,en;q=0.5",
+                "Cache-Control": "no-cache",
+                "Pragma": "no-cache"
             },
             "referrer": "https://www.cowin.gov.in/",
             "method": "GET",
@@ -100,28 +118,33 @@ const constructURL = (districtId) => {
     }
 }
 
-const fetchFromCowinAPI = async () => {
+const cowinFetchImpl = async (district_id) => {
+    if(!COWIN_REQUEST_CACHE[district_id]){
+        let urlSpec = constructURL(district_id);
+        let rawResponse = await fetch(urlSpec.url, urlSpec.opts).then(response => response.json());
+        if (debug) {
+            console.log("Upstream CoWin API response", rawResponse);
+        }
+        COWIN_REQUEST_CACHE[district_id] = rawResponse;
+    }
+    return COWIN_REQUEST_CACHE[district_id];
+}
+
+const fetchFromCowinAPI = async (config) => {
     return new Promise(async (resolve, reject) => {
-        let result = [];
+        let result = {};
         let failures = [];
-        for(let district of DISTRICT_IDS){
-            let urlSpec = constructURL(district);
-            let rawResponse = await fetch(urlSpec.url, urlSpec.opts).then(response => response.json());
-            if (debug) {
-                console.log("Upstream CoWin API response", rawResponse);
-            }
-            let response = parseAPIResponse(rawResponse);
+        for(let district_id of config.district_ids){
+            var rawResponse = await cowinFetchImpl(district_id);
+            let response = parseAPIResponse(rawResponse, config);
             if (typeof response.status === 'number' && response.status >= 500) {
-                failures.push({district_id: district, response: rawResponse});
+                failures.push({district_id: district_id, response: rawResponse});
                 continue;
             }
-            result = result.concat(response);
+            result[district_id] = response;
         }
-        if(failures.length == DISTRICT_IDS.length){
+        if(failures.length == config.district_ids.length){
             reject(failures);
-        }
-        if (debug) {
-            console.log("Returning response: ", result);
         }
         resolve(result);
     });

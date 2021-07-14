@@ -90,7 +90,7 @@ const parseAPIResponse = (response, config) => {
 
 const generateAPIUrl = (districtId) => {
     const today = getCurrentDate();
-    let URL = `https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id=${districtId}&date=${today}`;
+    let URL = `https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id=${districtId}&date=${today}&gibberish-value=${Math.random()}`;
     if (debug) {
         console.log(`Constructed CoWin URL: ${URL}`);
     }
@@ -106,12 +106,10 @@ const constructURL = (districtId) => {
             "credentials": "omit",
             "headers": {
                 "User-Agent": randomUserAgent,
-                "Accept": "application/json, text/plain, */*",
-                "Accept-Language": "en-US,en;q=0.5",
+                "Accept": "application/json",
                 "Cache-Control": "no-cache",
                 "Pragma": "no-cache"
             },
-            "referrer": "https://www.cowin.gov.in/",
             "method": "GET",
             "mode": "cors"
         }
@@ -134,6 +132,7 @@ const fetchFromCowinAPI = async (config) => {
     return new Promise(async (resolve, reject) => {
         let result = {};
         let failures = [];
+        COWIN_REQUEST_CACHE = {}; // reset cache
         for(let district_id of config.district_ids){
             var rawResponse = await cowinFetchImpl(district_id);
             let response = parseAPIResponse(rawResponse, config);

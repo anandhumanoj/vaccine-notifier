@@ -5,7 +5,7 @@ import { getErrorJSON } from "../utils/messages";
 
 const debug = !!process.env.ENABLE_DEBUG;
 
-const COWIN_REQUEST_CACHE = {};
+var COWIN_REQUEST_CACHE = {};
 
 const getCurrentDate = () => {
     var today = new Date();

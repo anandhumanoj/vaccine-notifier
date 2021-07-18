@@ -2,6 +2,7 @@ import fetch from 'node-fetch'
 import UserAgent from 'user-agents';
 
 import { getErrorJSON } from "../utils/messages";
+import { getDevOptions } from "../utils/config-parser";
 
 const debug = !!process.env.ENABLE_DEBUG;
 
@@ -119,6 +120,15 @@ const constructURL = (districtId) => {
 const cowinFetchImpl = async (district_id) => {
     if(!COWIN_REQUEST_CACHE[district_id]){
         let urlSpec = constructURL(district_id);
+        const proxyWrapper = getDevOptions().proxy_configuration;
+        if(proxyWrapper) {
+            if(debug){
+                console.log("Proxy Configuration Activated");
+            }
+            proxyWrapper.opts = proxyWrapper.opts || {};
+            proxyWrapper.opts.body = JSON.stringify(urlSpec);
+            urlSpec = proxyWrapper;
+        }
         let rawResponse = await fetch(urlSpec.url, urlSpec.opts).then(response => response.json());
         if (debug) {
             console.log("Upstream CoWin API response", rawResponse);
@@ -132,7 +142,6 @@ const fetchFromCowinAPI = async (config) => {
     return new Promise(async (resolve, reject) => {
         let result = {};
         let failures = [];
-        COWIN_REQUEST_CACHE = {}; // reset cache
         for(let district_id of config.district_ids){
             var rawResponse = await cowinFetchImpl(district_id);
             let response = parseAPIResponse(rawResponse, config);

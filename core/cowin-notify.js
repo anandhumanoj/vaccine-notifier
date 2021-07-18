@@ -1,4 +1,4 @@
-import { fetchFromCowinAPI } from "../integrations/cowin";
+import { fetchFromCowinAPI, emptyRequestCache } from "../integrations/cowin";
 import * as messages from '../utils/messages';
 import { triggerDevNotification, sendNotification } from '../utils/notification'
 
@@ -14,6 +14,7 @@ const generateResponseContent = (centers) => {
 
 const triggerCowinNotifications = async (configurations) => {
     let sessionFound = false;
+    emptyRequestCache();
     for (const config of configurations) {
         try {
             let cowinResponse = await fetchFromCowinAPI(config);

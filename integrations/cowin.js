@@ -8,6 +8,10 @@ const debug = !!process.env.ENABLE_DEBUG;
 
 var COWIN_REQUEST_CACHE = {};
 
+const emptyRequestCache = () => {
+    COWIN_REQUEST_CACHE = {};
+};
+
 const getCurrentDate = () => {
     var today = new Date();
     var dd = today.getDate();
@@ -159,5 +163,6 @@ const fetchFromCowinAPI = async (config) => {
 }
 
 export {
-    fetchFromCowinAPI
+    fetchFromCowinAPI,
+    emptyRequestCache
 };
